@@ -89,7 +89,7 @@
 
 <body>
     <!-- action attribute: URL where the form's collected data should be sent when it is submitted-->
-    <form action="/events" method="post" name="event_form" onsubmit="return postDataAsJson()">
+    <form action="/create" method="post" name="event_form" onsubmit="return postDataAsJson()">
         <fieldset>
             <legend>
                 CREATE YOUR EVENT
@@ -132,7 +132,7 @@
         var jsonData = JSON.stringify(eventData);
 
         // Senden Sie die JSON-Daten an den Server
-        fetch('/events', {
+        fetch('/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
