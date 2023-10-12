@@ -1,4 +1,5 @@
 import pool from "../../index.js"
+import { Feed } from 'feed';
 
 export const listEventsView = (req, res) => {
   res.render("listEvents", {
@@ -13,8 +14,8 @@ export const createEventView = (req, res) => {
 
 export const createEvent = async (req, res) => {
   const { event_name: eventName, event_description: eventDescription, event_date: eventDate } = req.body;
-
   const client = await pool.connect()
+
   try {
 
     await client.query('INSERT INTO events (name, date, description) VALUES ($1, $2, $3) RETURNING *', [eventName, eventDate, eventDescription])
@@ -23,8 +24,44 @@ export const createEvent = async (req, res) => {
   } catch {
     console.log("error adding event")
     res.status(500).send("error adding event")
+  } finally {
+    client.release()
   }
- 
-  client.release()
+}
+
+export const getEventFeed = async (req, res) => {
+  const feed = new Feed({
+    title: 'Event Feed',
+    description: 'This is an amazing feed informing you about upcoming events.',
+    id: process.env.APP_URL + '/feed',
+    link: process.env.APP_URL + '/feed',
+    language: 'en',
+  });
+
+  const client = await pool.connect()
+  
+  try {
+    const result = await client.query('SELECT * FROM events')
+    const events = result.rows;
+
+    events.forEach((event) => {
+      feed.addItem({
+        title: event.name,
+        id: `http://example.com/events/${event.id}`,
+        link: `http://example.com/events/${event.id}`,
+        description: event.description,
+        date: event.date,
+      });
+    });
+
+    res.set('Content-Type', 'application/atom+xml');
+    res.send(feed.atom1());
+
+  } catch(e) {
+    console.log(e)
+    res.status(500).send("error requesting feed")
+  } finally {
+    client.release()
+  }
 }
   
