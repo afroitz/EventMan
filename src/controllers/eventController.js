@@ -7,6 +7,7 @@ export const listEventsView = (req, res) => {
 
 export const createEventView = (req, res) => {
   res.render("createEvent", {
+    createEventRoute: process.env.APP_URL + "/create"
   } );
 }
 

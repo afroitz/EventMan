@@ -2,6 +2,13 @@ import express from 'express';
 import 'dotenv/config'
 import pg from "pg";
 import router from './src/routes/router.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const { Pool } = pg;
 
 const pool = new Pool({
@@ -18,6 +25,9 @@ pool.on('error', (err, client) => {
 })
 
 const app = express();
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'src/views'));
+
 const PORT = process.env.PORT
 
 app.use('/', router);
