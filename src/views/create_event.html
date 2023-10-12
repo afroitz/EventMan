@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+    }
+
+    fieldset {
+        width: 400px;
+        padding: 1em;
+        border: 1px solid #ccc;
+        border-radius: 1em;
+    }
+
+    legend{
+        font: 1em sans-serif;
+        margin-bottom: 10px;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    fieldset li + li {
+        margin-top: 1em;
+    }
+
+    label {
+        /* Uniform size & alignment */
+        display: inline-block;
+        width: 90px;
+        text-align: right;
+        font: 1em sans-serif;
+    }
+
+    input,
+    textarea {
+        /* To make sure that all text fields have the same font settings */
+        font: 1em sans-serif;
+
+        /* Uniform text field size */
+        width: 300px;
+        box-sizing: border-box;
+
+        /* Match form field borders */
+        border: 1px solid #999;
+    }
+
+    input:focus,
+    textarea:focus {
+        /* Additional highlight for focused elements */
+        border-color: #000;
+    }
+
+    textarea {
+        /* Align multiline text fields with their labels */
+        vertical-align: top;
+
+        /* Provide space to type some text */
+        height: 5em;
+    }
+
+    .button {
+        /* Fit button to text fields */
+        padding-left: 90px;
+    }
+
+    button {
+        /* Fit button to text field */
+        margin-left: 0.5em;
+        font: 1em sans-serif;
+    }
+
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Event Manager</title>
+</head>
+
+<body>
+    <!-- action attribute: URL where the form's collected data should be sent when it is submitted-->
+    <form action="/events" method="post" name="event_form" onsubmit="return postDataAsJson()">
+        <fieldset>
+            <legend>
+                CREATE YOUR EVENT
+            </legend>
+
+            <ul>
+                <li>
+                    <!-- Get event name-->
+                    <label for="my_event">Event:</label>
+                    <input type="text" id="my_event" name="event_name" />
+                </li>
+                <li>
+                    <!-- Get event date & time-->
+                    <label for="date">Date:</label>
+                    <input type="datetime-local" id="date" name="event_date" />
+                </li>
+                <li>
+                    <!-- Get additional info-->
+                    <label for="description">Info:</label>
+                    <textarea id="description" name="event_description"></textarea>
+                </li>
+                <li class="button">
+                    <button type="submit">Create Event</button>
+                </li>
+            </ul>
+        </fieldset>
+    </form>
+
+</body>
+
+<script>
+    function postDataAsJson(form) {
+        var eventForm = form;
+        var eventData = {
+            event_name: eventForm.event_name.value,
+            event_date: eventForm.event_date.value,
+            event_description: eventForm.event_description.value
+        };
+
+        var jsonData = JSON.stringify(eventData);
+
+        // Senden Sie die JSON-Daten an den Server
+        fetch('/events', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: jsonData
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Hier können Sie die Antwort des Servers verarbeiten
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('Fehler beim Senden der Daten: ', error);
+            });
+
+        return false;
+    }
+</script>
+
+
+</html>
+
