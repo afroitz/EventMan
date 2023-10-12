@@ -1,4 +1,4 @@
-import pool from "../../index"
+import pool from "../../index.js"
 
 export const listEventsView = (req, res) => {
   res.render("listEvents", {

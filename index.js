@@ -1,6 +1,7 @@
 import express from 'express';
 import 'dotenv/config'
 import pg from "pg";
+import router from './src/routes/router.js';
 const { Pool } = pg;
 
 const pool = new Pool({
