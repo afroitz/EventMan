@@ -40,33 +40,3 @@
 
 </body>
 </html>
-
-<script>
-    // Run function when form is submitted
-    document.getElementById("event_form").addEventListener("submit", function(event) {
-        event.preventDefault(); // Prevent default behavior of the form
-        const formData = new FormData(this); // Get form data
-
-        // Convert form data to JSON
-        const formDataObject = {};
-        formData.forEach((value, key) => {
-            formDataObject[key] = value;
-        });
-        const jsonData = JSON.stringify(formDataObject);
-
-        // Create HTML request
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", '<%= createEventRoute %>', true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-
-        xhr.onload = function () {
-            if (xhr.status >= 200 && xhr.status < 300) {
-                console.log('Event successfully created.');
-            } else {
-                console.error('Error creating event:', xhr.status, xhr.statusText);
-            }
-        }
-        xhr.send(jsonData);
-    });
-</script>

@@ -34,8 +34,8 @@ app.use(express.static('src/public'));
 const PORT = process.env.PORT
 
 // body parser middleware
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
 
 app.use('/', router);
 

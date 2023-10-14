@@ -14,12 +14,13 @@ export const createEventView = (req, res) => {
 
 export const createEvent = async (req, res) => {
 
-  // log request body
-  console.log("Request Body:", req.body);
-
   // get event name, description, and date from request body
   const { event_name: eventName, event_description: eventDescription, event_date: eventDate } = req.body;
   
+  console.log("Event Name:", eventName);
+  console.log("Event Description:", eventDescription);
+  console.log("Event Date:", eventDate);
+
   //connect to db
   const client = await pool.connect()
 
