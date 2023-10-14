@@ -9,7 +9,7 @@
 
 <body>
     <!-- action attribute: URL where the form's collected data should be sent when it is submitted-->
-    <form action="<%= createEventRoute %>" method="post" name="event_form" onsubmit="return postDataAsJson()">
+    <form id="event_form" action="<%= createEventRoute %>" method="post" name="event_form">
         <fieldset>
             <legend>
                 CREATE YOUR EVENT
@@ -39,44 +39,34 @@
     </form>
 
 </body>
+</html>
 
 <script>
-    // convert form data to JSON, when form is submitted. form is passed as parameter. 
-    function postDataAsJson(form) {
-        var eventForm = form;
+    // Run function when form is submitted
+    document.getElementById("event_form").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent default behavior of the form
+        const formData = new FormData(this); // Get form data
 
-        // Get data that was submitted in the form 
-        var eventData = {
-            event_name: eventForm.event_name.value,
-            event_date: eventForm.event_date.value,
-            event_description: eventForm.event_description.value
-        };
+        // Convert form data to JSON
+        const formDataObject = {};
+        formData.forEach((value, key) => {
+            formDataObject[key] = value;
+        });
+        const jsonData = JSON.stringify(formDataObject);
 
-        // Convert data to JSON
-        var jsonData = JSON.stringify(eventData);
+        // Create HTML request
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", '<%= createEventRoute %>', true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 
-        // Send data to server
-        fetch('<%= createEventRoute %>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: jsonData
-        })
-            // handle response from server by converting it to JSON and catch errors
-            .then(response => response.json())
-            .then(data => {
-                
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Fehler beim Senden der Daten: ', error);
-            });
-
-        // prevent reloading the page
-        return false;
-    }
-
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                console.log('Event successfully created.');
+            } else {
+                console.error('Error creating event:', xhr.status, xhr.statusText);
+            }
+        }
+        xhr.send(jsonData);
+    });
 </script>
-
-</html>

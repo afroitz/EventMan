@@ -5,6 +5,8 @@ import router from './src/routes/router.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import bodyParser from 'body-parser'; 
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -27,10 +29,13 @@ pool.on('error', (err, client) => {
 const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
-
 app.use(express.static('src/public'));
 
 const PORT = process.env.PORT
+
+// body parser middleware
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use('/', router);
 

@@ -13,9 +13,17 @@ export const createEventView = (req, res) => {
 }
 
 export const createEvent = async (req, res) => {
+
+  // log request body
+  console.log("Request Body:", req.body);
+
+  // get event name, description, and date from request body
   const { event_name: eventName, event_description: eventDescription, event_date: eventDate } = req.body;
+  
+  //connect to db
   const client = await pool.connect()
 
+  // insert event into db and return event or error
   try {
 
     await client.query('INSERT INTO events (name, date, description) VALUES ($1, $2, $3) RETURNING *', [eventName, eventDate, eventDescription])
@@ -24,6 +32,8 @@ export const createEvent = async (req, res) => {
   } catch {
     console.log("error adding event")
     res.status(500).send("error adding event")
+
+  // release db connection
   } finally {
     client.release()
   }
@@ -64,4 +74,3 @@ export const getEventFeed = async (req, res) => {
     client.release()
   }
 }
-  
