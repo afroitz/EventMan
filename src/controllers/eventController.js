@@ -1,15 +1,43 @@
 import pool from "../../index.js"
 import { Feed } from 'feed';
 
+export const loginView = (req, res) => {
+  res.render("login", {
+    loginRoute: process.env.APP_URL + "/login"
+    });
+  }
+
+export const login = async (req, res) => {
+  // get username and password from request body
+  const { username, password } = req.body;
+
+  // PLACEHOLDER: add logic to check username and password against database
+  if (username === 'user' && password === 'password') {
+    req.session.user = username;
+    res.redirect('/create');
+  }else{
+    res.send('Invalid login credentials.');
+    res.redirect('/login');
+  }
+}
+
 export const listEventsView = (req, res) => {
-  res.render("listEvents", {
-  } );
+  if (req.session.user) {
+    res.render("listEvents", {
+    } );
+  } else {
+    res.redirect('/login');
+  }
 }
 
 export const createEventView = (req, res) => {
-  res.render("createEvent", {
-    createEventRoute: process.env.APP_URL + "/create"
-  } );
+  if (req.session.user) {
+    res.render("createEvent", {
+      createEventRoute: process.env.APP_URL + "/create"
+    });
+  } else {
+    res.redirect('/login');
+  }
 }
 
 export const createEvent = async (req, res) => {
