@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "develop": "node index.js"
+    "develop": "node index.js",
+    "init-db": "bash ./scripts/init-db.sh"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +20,8 @@
     "express-session": "^1.17.3",
     "feed": "^4.2.2",
     "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@flydotio/dockerfile": "^0.4.10"
   }
 }

@@ -19,9 +19,9 @@ class EventController {
     res.render("listEvents", {
       events: events,
       routes: {
-        create: process.env.APP_URL + "/create",
-        list: process.env.APP_URL + "/list",
-        feed: process.env.APP_URL + "/feed",
+        create: "/create",
+        list: "/list",
+        feed: "/feed",
       },
     });
   };
@@ -33,9 +33,9 @@ class EventController {
 
     res.render("createEvent", {
       routes: {
-        create: process.env.APP_URL + "/create",
-        list: process.env.APP_URL + "/list",
-        feed: process.env.APP_URL + "/feed",
+        create: "/create",
+        list: "/list",
+        feed: "/feed",
       },
     });
   };
@@ -54,11 +54,13 @@ class EventController {
       } = req.body;
 
       // save event to db
-      this.repository.create({
+      await this.repository.create({
         name: eventName,
         description: eventDescription,
         date: eventDate,
       });
+
+      res.redirect("/list");
     } catch (e) {
       res.status(500).send("error creating event");
     }
