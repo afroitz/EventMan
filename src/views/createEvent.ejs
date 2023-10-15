@@ -8,35 +8,36 @@
 </head>
 
 <body>
-    <!-- action attribute: URL where the form's collected data should be sent when it is submitted-->
-    <form id="event_form" action="<%= createEventRoute %>" method="post" name="event_form">
-        <fieldset>
-            <legend>
-                CREATE YOUR EVENT
-            </legend>
-
-            <ul>
-                <li>
-                    <!-- Get event name-->
-                    <label for="my_event">Event:</label>
-                    <input type="text" id="my_event" name="event_name" />
-                </li>
-                <li>
-                    <!-- Get event date & time-->
-                    <label for="date">Date:</label>
-                    <input type="datetime-local" id="date" name="event_date" />
-                </li>
-                <li>
-                    <!-- Get additional info-->
-                    <label for="description">Info:</label>
-                    <textarea id="description" name="event_description"></textarea>
-                </li>
-                <li class="button">
-                    <button type="submit">Create Event</button>
-                </li>
-            </ul>
-        </fieldset>
-    </form>
-
+    <%- include('partials/_header.ejs');  %>
+    <main>
+        <!-- action attribute: URL where the form's collected data should be sent when it is submitted-->
+        <form id="event_form" action="<%= routes.createEvent %>" method="post" name="event_form">
+            <fieldset>
+                <legend>
+                    CREATE YOUR EVENT
+                </legend>
+                <ul>
+                    <li>
+                        <!-- Get event name-->
+                        <label for="my_event">Event:</label>
+                        <input type="text" id="my_event" name="event_name" />
+                    </li>
+                    <li>
+                        <!-- Get event date & time-->
+                        <label for="date">Date:</label>
+                        <input type="datetime-local" id="date" name="event_date" />
+                    </li>
+                    <li>
+                        <!-- Get additional info-->
+                        <label for="description">Info:</label>
+                        <textarea id="description" name="event_description"></textarea>
+                    </li>
+                    <li class="button">
+                        <button type="submit">Create Event</button>
+                    </li>
+                </ul>
+            </fieldset>
+        </form>
+    </main>
 </body>
 </html>

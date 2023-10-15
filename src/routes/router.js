@@ -1,11 +1,18 @@
 import express from 'express';
-import { createEvent, createEventView, listEventsView, getEventFeed} from '../controllers/eventController.js';
+import EventController from '../controllers/EventController.js';
+import AuthController from '../controllers/AuthController.js';
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
+const eventController = new EventController();
+const authController = new AuthController();
 
-router.get('/create', createEventView);
-router.get('/list', listEventsView);
-router.post('/create', createEvent);
-router.get('/feed', getEventFeed)
+router.get('/create', auth, eventController.createEventView);
+router.get('/list', auth, eventController.listEventsView);
+router.post('/create', auth, eventController.createEvent);
+router.get('/feed', auth, eventController.getEventFeed)
+
+router.get('/login', authController.loginView);
+router.post('/login', authController.login);
 
 export default router;

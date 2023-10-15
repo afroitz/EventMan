@@ -1,77 +1,106 @@
-import pool from "../../index.js"
-import { Feed } from 'feed';
+import { Feed } from "feed";
+import EventRepository from "../repositories/EventRepository.js";
 
-export const listEventsView = (req, res) => {
-  res.render("listEvents", {
-  } );
-}
 
-export const createEventView = (req, res) => {
-  res.render("createEvent", {
-    createEventRoute: process.env.APP_URL + "/create"
-  } );
-}
+class EventController {
+  repository;
 
-export const createEvent = async (req, res) => {
-
-  // get event name, description, and date from request body
-  const { event_name: eventName, event_description: eventDescription, event_date: eventDate } = req.body;
-  
-  console.log("Event Name:", eventName);
-  console.log("Event Description:", eventDescription);
-  console.log("Event Date:", eventDate);
-
-  //connect to db
-  const client = await pool.connect()
-
-  // insert event into db and return event or error
-  try {
-
-    await client.query('INSERT INTO events (name, date, description) VALUES ($1, $2, $3) RETURNING *', [eventName, eventDate, eventDescription])
-    res.status(200).send("Successfully added event")
-
-  } catch {
-    console.log("error adding event")
-    res.status(500).send("error adding event")
-
-  // release db connection
-  } finally {
-    client.release()
+  constructor() {
+    this.repository = new EventRepository();
   }
-}
 
-export const getEventFeed = async (req, res) => {
-  const feed = new Feed({
-    title: 'Event Feed',
-    description: 'This is an amazing feed informing you about upcoming events.',
-    id: process.env.APP_URL + '/feed',
-    link: process.env.APP_URL + '/feed',
-    language: 'en',
-  });
+  /**
+   * Render view for listing events
+   */
+  listEventsView = async (req, res) => {
 
-  const client = await pool.connect()
-  
-  try {
-    const result = await client.query('SELECT * FROM events')
-    const events = result.rows;
+    const events = await this.repository.list();
 
-    events.forEach((event) => {
-      feed.addItem({
-        title: event.name,
-        id: `http://example.com/events/${event.id}`,
-        link: `http://example.com/events/${event.id}`,
-        description: event.description,
-        date: event.date,
-      });
+    res.render("listEvents", {
+      events: events,
+      routes: {
+        create: process.env.APP_URL + "/create",
+        list: process.env.APP_URL + "/list",
+        feed: process.env.APP_URL + "/feed",
+      },
     });
+  };
 
-    res.set('Content-Type', 'application/atom+xml');
-    res.send(feed.atom1());
+  /**
+   * Render the view for creating a new event
+   */
+  createEventView = (req, res) => {
 
-  } catch(e) {
-    console.log(e)
-    res.status(500).send("error requesting feed")
-  } finally {
-    client.release()
-  }
+    res.render("createEvent", {
+      routes: {
+        create: process.env.APP_URL + "/create",
+        list: process.env.APP_URL + "/list",
+        feed: process.env.APP_URL + "/feed",
+      },
+    });
+  };
+
+  /**
+   * Handle post request for creating new event
+   */
+  createEvent = async (req, res) => {
+
+    try {
+      // get event name, description, and date from request body
+      const {
+        event_name: eventName,
+        event_description: eventDescription,
+        event_date: eventDate,
+      } = req.body;
+
+      // save event to db
+      this.repository.create({
+        name: eventName,
+        description: eventDescription,
+        date: eventDate,
+      });
+    } catch (e) {
+      res.status(500).send("error creating event");
+    }
+  };
+
+  /**
+   * Create an Atom feed for events
+   */
+  getEventFeed = async (req, res) => {
+
+    try {
+      // create feed
+      const feed = new Feed({
+        title: "Event Feed",
+        description:
+          "This is an amazing feed informing you about upcoming events.",
+        id: process.env.APP_URL + "/feed",
+        link: process.env.APP_URL + "/feed",
+        language: "en",
+      });
+
+      // get events from db
+      const events = await this.repository.list()
+      
+      // add events to feed
+      events.forEach((event) => {
+        feed.addItem({
+          title: event.name,
+          id: `http://example.com/events/${event.id}`,
+          link: `http://example.com/events/${event.id}`,
+          description: event.description,
+          date: event.date,
+        });
+      });
+
+      res.set("Content-Type", "application/atom+xml");
+      res.send(feed.atom1());
+    } catch (e) {
+      console.log(e);
+      res.status(400).send("error requesting feed");
+    }
+  };
 }
+
+export default EventController;
