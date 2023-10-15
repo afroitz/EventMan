@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <title>Event Manager</title>
+</head>
+
+<body>
+    <%- include('partials/_header.ejs');  %>
+    <main>
+      <h1>EVENTS</h1>
+      <ul class="events-list">
+        <% events.forEach(function(event){ %>
+          <%- include('partials/_eventDisplay', {event: event}); %>
+        <% }); %>
+      </ul>
+    </main>
+</body>
+</html>
