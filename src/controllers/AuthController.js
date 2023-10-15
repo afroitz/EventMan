@@ -23,7 +23,7 @@ class AuthController {
     const { username, password } = req.body;
 
     // PLACEHOLDER: add logic to check username and password against database
-    if (username === "user" && password === "password") {
+    if (username === process.env.TEST_USER && password === process.env.TEST_PASSWORD) {
       req.session.user = username;
       res.redirect("/create");
     } else {
