@@ -1,5 +1,5 @@
 import { Feed } from "feed";
-import EventRepository from "../repositories/eventRepository.js";
+import EventRepository from "../repositories/EventRepository.js";
 
 
 class EventController {
@@ -13,6 +13,10 @@ class EventController {
    * Render view for listing events
    */
   listEventsView = async (req, res) => {
+
+    if(!req.session.user){
+      res.redirect('/login');
+    }
 
     const events = await this.repository.list();
 
@@ -32,6 +36,11 @@ class EventController {
    * Render the view for creating a new event
    */
   createEventView = (req, res) => {
+
+    if(!req.session.user){
+      res.redirect('/login');
+    }
+
     res.render("createEvent", {
       routes: {
         create: process.env.APP_URL + "/create",
@@ -45,6 +54,11 @@ class EventController {
    * Handle post request for creating new event
    */
   createEvent = async (req, res) => {
+
+    if(!req.session.user){
+      res.redirect('/login');
+    }
+
     try {
       // get event name, description, and date from request body
       const {
@@ -68,6 +82,11 @@ class EventController {
    * Create an Atom feed for events
    */
   getEventFeed = async (req, res) => {
+
+    if(!req.session.user){
+      res.redirect('/login');
+    }
+
     try {
       // create feed
       const feed = new Feed({
