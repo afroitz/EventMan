@@ -12,13 +12,13 @@ const __dirname = dirname(__filename);
 
 const { Pool } = pg;
 
-const pool = new Pool({
+const pool = new Pool(process.env.DATABASE_ENVIRONMENT === 'development' ?{
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
   password: process.env.DB_PW,
   port: process.env.DP_PORT,
-});
+} : { connectionString: process.env.DATABASE_URL });
 
 pool.on('error', (err, client) => {
   console.error('Unexpected error on idle client', err)

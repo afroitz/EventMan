@@ -10,10 +10,10 @@ class AuthController {
     res.render("login", {
       error: error,
       routes: {
-        create: process.env.APP_URL + "/create",
-        list: process.env.APP_URL + "/list",
-        feed: process.env.APP_URL + "/feed",
-        login: process.env.APP_URL + "/login",
+        create: "/create",
+        list: "/list",
+        feed: "/feed",
+        login: "/login",
       },
     });
   };
