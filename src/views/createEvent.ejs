@@ -9,7 +9,7 @@
 
 <body>
     <!-- action attribute: URL where the form's collected data should be sent when it is submitted-->
-    <form action="<%= createEventRoute %>" method="post" name="event_form" onsubmit="return postDataAsJson()">
+    <form id="event_form" action="<%= createEventRoute %>" method="post" name="event_form">
         <fieldset>
             <legend>
                 CREATE YOUR EVENT
@@ -39,44 +39,4 @@
     </form>
 
 </body>
-
-<script>
-    // convert form data to JSON, when form is submitted. form is passed as parameter. 
-    function postDataAsJson(form) {
-        var eventForm = form;
-
-        // Get data that was submitted in the form 
-        var eventData = {
-            event_name: eventForm.event_name.value,
-            event_date: eventForm.event_date.value,
-            event_description: eventForm.event_description.value
-        };
-
-        // Convert data to JSON
-        var jsonData = JSON.stringify(eventData);
-
-        // Send data to server
-        fetch('<%= createEventRoute %>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: jsonData
-        })
-            // handle response from server by converting it to JSON and catch errors
-            .then(response => response.json())
-            .then(data => {
-                
-                console.log(data);
-            })
-            .catch(error => {
-                console.error('Fehler beim Senden der Daten: ', error);
-            });
-
-        // prevent reloading the page
-        return false;
-    }
-
-</script>
-
 </html>

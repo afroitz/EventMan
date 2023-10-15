@@ -27,10 +27,13 @@ pool.on('error', (err, client) => {
 const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/views'));
-
 app.use(express.static('src/public'));
 
 const PORT = process.env.PORT
+
+// body parser middleware
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
 
 app.use('/', router);
 
