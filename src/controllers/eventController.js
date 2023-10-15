@@ -14,13 +14,7 @@ class EventController {
    */
   listEventsView = async (req, res) => {
 
-    if(!req.session.user){
-      res.redirect('/login');
-    }
-
     const events = await this.repository.list();
-
-    console.log(JSON.stringify(events, null, 2));
 
     res.render("listEvents", {
       events: events,
@@ -37,10 +31,6 @@ class EventController {
    */
   createEventView = (req, res) => {
 
-    if(!req.session.user){
-      res.redirect('/login');
-    }
-
     res.render("createEvent", {
       routes: {
         create: process.env.APP_URL + "/create",
@@ -54,10 +44,6 @@ class EventController {
    * Handle post request for creating new event
    */
   createEvent = async (req, res) => {
-
-    if(!req.session.user){
-      res.redirect('/login');
-    }
 
     try {
       // get event name, description, and date from request body
@@ -82,10 +68,6 @@ class EventController {
    * Create an Atom feed for events
    */
   getEventFeed = async (req, res) => {
-
-    if(!req.session.user){
-      res.redirect('/login');
-    }
 
     try {
       // create feed

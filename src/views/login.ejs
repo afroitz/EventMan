@@ -33,6 +33,11 @@
                 </ul>
             </fieldset>
         </form>
+        <% if (error) { %>
+            <div class="error-notice">
+                Invalid login credentials
+            </div>
+        <% } %>
     </main>
 </body>
 </html>

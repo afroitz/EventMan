@@ -1,6 +1,14 @@
 class AuthController {
   loginView = (req, res) => {
+
+    if(req.session.user) {
+      res.redirect("/create");
+    }
+
+    const error = req.query.error;
+
     res.render("login", {
+      error: error,
       routes: {
         create: process.env.APP_URL + "/create",
         list: process.env.APP_URL + "/list",
@@ -19,8 +27,7 @@ class AuthController {
       req.session.user = username;
       res.redirect("/create");
     } else {
-      res.send("Invalid login credentials.");
-      res.redirect("/login");
+      res.redirect("/login?error=true");
     }
   };
 }

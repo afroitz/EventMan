@@ -119,4 +119,14 @@ nav a:hover {
   color: #999;
   font-size: 0.75rem;
   margin: 0.5rem 0;
+}
+
+.error-notice {
+  margin-top: 1rem;
+  background-color: #f8d7da;
+  border: 1px solid red;
+  color: red;
+  font-size: 0.75rem;
+  padding: 1rem 2%;
+  border-radius: 1rem;
 }/*# sourceMappingURL=styles.css.map */
