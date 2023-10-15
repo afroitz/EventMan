@@ -17,7 +17,7 @@ const pool = new Pool(process.env.DATABASE_ENVIRONMENT === 'development' ?{
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
   password: process.env.DB_PW,
-  port: process.env.DP_PORT,
+  port: process.env.DB_PORT,
 } : { connectionString: process.env.DATABASE_URL });
 
 pool.on('error', (err, client) => {
