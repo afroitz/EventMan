@@ -129,4 +129,17 @@ nav a:hover {
   font-size: 0.75rem;
   padding: 1rem 2%;
   border-radius: 1rem;
+}
+
+#get-events-button {
+  padding: 1rem 2rem;
+  font-size: 1.5rem;
+  border-radius: 1rem;
+  font-weight: bold;
+  background: green;
+  transition: all 0.2s ease-in-out;
+}
+#get-events-button:hover {
+  transform: rotate(3deg) scale(1.1);
+  background-color: chartreuse;
 }/*# sourceMappingURL=styles.css.map */

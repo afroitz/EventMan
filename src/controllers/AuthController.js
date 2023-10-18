@@ -2,7 +2,7 @@ class AuthController {
   loginView = (req, res) => {
 
     if(req.session.user) {
-      res.redirect("/create");
+      return res.redirect("/create");
     }
 
     const error = req.query.error;
@@ -14,6 +14,7 @@ class AuthController {
         list: "/list",
         feed: "/feed",
         login: "/login",
+        getFromGioele: "/get-events-from-gioele",
       },
     });
   };

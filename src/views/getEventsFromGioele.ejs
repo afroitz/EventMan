@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <title>Event Manager</title>
+</head>
+
+<body>
+    <%- include('partials/_header.ejs');  %>
+    <main>
+      <button id="get-events-button">Get Events from Gioele!</button>
+      <p id="get-events-result"></p>
+    </main>
+</body>
+</html>
+
+<script>
+  document.getElementById("get-events-button").addEventListener("click", function() {
+  fetch("/get-events-from-gioele", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById("get-events-result").innerHTML = `Retrieved ${data.events?? 0} events (${data.new?? 0} new, ${data.updated?? 0} updated).`
+  });
+});
+</script>
