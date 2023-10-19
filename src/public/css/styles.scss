@@ -130,11 +130,14 @@ nav {
     margin: 0;
   }
 
-  .event-date {
+  .event-meta {
     color: #999;
     font-size: 0.75rem;
     margin: 0.5rem 0;
+    display: flex;
+    gap: 0.5rem;
   }
+
 }
 
 // error notice

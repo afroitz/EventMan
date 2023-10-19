@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "develop": "node index.js",
+    "develop": "nodemon index.js",
     "init-db": "bash ./scripts/init-db.sh"
   },
   "keywords": [],

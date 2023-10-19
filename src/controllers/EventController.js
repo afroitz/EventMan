@@ -2,7 +2,7 @@ import { Feed } from "feed";
 import EventRepository from "../repositories/EventRepository.js";
 import xml2js from "xml2js";
 import fetch from "node-fetch";
-import {isArray, promisify} from "util";
+import { promisify } from "util";
 
 class EventController {
   repository;
@@ -49,16 +49,17 @@ class EventController {
     try {
       // get event name, description, and date from request body
       const {
-        event_name: eventName,
-        event_description: eventDescription,
+        event_title: eventTitle,
+        event_summary: eventSummary,
         event_date: eventDate,
       } = req.body;
 
       // save event to db
       await this.repository.create({
-        name: eventName,
-        description: eventDescription,
+        title: eventTitle,
+        summary: eventSummary,
         date: eventDate,
+        author: { name: req.session.user },
       });
 
       res.redirect("/list");
@@ -85,14 +86,15 @@ class EventController {
       // get events from db
       const events = await this.repository.list();
 
-      // add events to feed
       events.forEach((event) => {
         feed.addItem({
-          title: event.name,
-          id: `http://example.com/events/${event.id}`,
-          link: `http://example.com/events/${event.id}`,
-          description: event.description,
-          date: event.date,
+          title: event.title,
+          id: "urn:uuid:" + event.id,
+          link: `${process.env.APP_URL}/events/${event.id}`,
+          author: [{ name: event.author.name ?? "Unknown author" }],
+          date: event.updated,
+          summary: "test",
+          published: event.published,
         });
       });
 
@@ -123,16 +125,19 @@ class EventController {
    */
   getEventsFromGioele = async (req, res) => {
     try {
-
       // fetch atom file
       const response = await fetch(process.env.ATOM_URL);
       const xml = await response.text();
-      
+
       // parse atom file
-      const parseString = promisify(xml2js.Parser({explicitArray: false}).parseString);
+      const parseString = promisify(
+        xml2js.Parser({ explicitArray: false }).parseString
+      );
       const result = await parseString(xml);
 
-      const events = Array.isArray(result.feed.entry)? result.feed.entry : [result.feed.entry];
+      const events = Array.isArray(result.feed.entry)
+        ? result.feed.entry
+        : [result.feed.entry];
 
       let updatedEvents = 0;
       let newEvents = 0;
@@ -140,10 +145,9 @@ class EventController {
       // try to get event by id
       for (const event of events) {
         try {
-          if(event.id.slice(0,9) === "urn:uuid:"){
+          if (event.id.slice(0, 9) === "urn:uuid:") {
             event.id = event.id.slice(9);
           }
-
 
           const previousEvent = await this.repository.get(event.id);
 
@@ -166,8 +170,8 @@ class EventController {
         new: newEvents,
         updated: updatedEvents,
       });
-    } catch(e) {
-      console.log(e)
+    } catch (e) {
+      console.log(e);
       res.status(500).send("Error");
     }
   };
