@@ -12,7 +12,7 @@ psql -U $DB_USER -h $DB_HOST -p $DB_PORT -d $DB_NAME -c 'DROP TABLE IF EXISTS ev
 psql -U $DB_USER -h $DB_HOST -p $DB_PORT -d $DB_NAME -c "CREATE TABLE events (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     external_id VARCHAR(255) UNIQUE DEFAULT uuid_generate_v4(), 
-    origin VARCHAR(255) DEFAULT '$APP_URL',
+    origin VARCHAR(255) DEFAULT 'unknown',
     published TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     title VARCHAR(255),

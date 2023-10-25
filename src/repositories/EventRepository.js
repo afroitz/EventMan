@@ -52,7 +52,7 @@ class EventRepository {
    * Create a new event
    * @param event - event object with properties name, date and summary
    */
-  async create(event) {
+  async create(event, origin) {
     const client = await pool.connect();
 
     if (!event.id) {
@@ -69,8 +69,8 @@ class EventRepository {
 
     try {
       await client.query(
-        "INSERT INTO events (id, published, updated, title, date, summary, author) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-        [event.id, event.published, event.updated, event.title, event.date, event.summary, event.author]
+        "INSERT INTO events (id, origin, published, updated, title, date, summary, author) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+        [event.id, origin, event.published, event.updated, event.title, event.date, event.summary, event.author]
       );
     } catch(e) {
       console.log(e);
