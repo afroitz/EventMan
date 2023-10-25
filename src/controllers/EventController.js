@@ -3,6 +3,7 @@ import EventRepository from "../repositories/EventRepository.js";
 import xml2js from "xml2js";
 import fetch from "node-fetch";
 import { promisify } from "util";
+import { log } from "console";
 
 class EventController {
   repository;
@@ -134,11 +135,13 @@ class EventController {
         xml2js.Parser({ explicitArray: false }).parseString
       );
       const result = await parseString(xml);
-
+      
+      // check if there are multiple events
       const events = Array.isArray(result.feed.entry)
         ? result.feed.entry
         : [result.feed.entry];
 
+      // count new and updated events
       let updatedEvents = 0;
       let newEvents = 0;
 
