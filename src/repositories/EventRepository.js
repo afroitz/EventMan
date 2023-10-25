@@ -9,7 +9,7 @@ class EventRepository {
   async get(id) {
     const client = await pool.connect();
     try {
-      const { rows } = await client.query("SELECT * FROM events WHERE id = $1", [id]);
+      const { rows } = await client.query("SELECT * FROM events WHERE external_id = $1", [id]);
       return rows[0];
     } catch {
       return null;
@@ -69,7 +69,7 @@ class EventRepository {
 
     try {
       await client.query(
-        "INSERT INTO events (id, origin, published, updated, title, date, summary, author) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+        "INSERT INTO events (external_id, origin, published, updated, title, date, summary, author) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
         [event.id, origin, event.published, event.updated, event.title, event.date, event.summary, event.author]
       );
     } catch(e) {
