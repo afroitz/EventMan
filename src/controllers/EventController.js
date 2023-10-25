@@ -62,7 +62,7 @@ class EventController {
         summary: eventSummary,
         date: eventDate,
         author: { name: req.session.user },
-      }), process.env.APP_URL;
+      });
 
       res.redirect("/list");
     } catch (e) {

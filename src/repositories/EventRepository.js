@@ -52,7 +52,7 @@ class EventRepository {
    * Create a new event
    * @param event - event object with properties name, date and summary
    */
-  async create(event, origin) {
+  async create(event, origin=process.env.APP_URL) {
     const client = await pool.connect();
 
     if (!event.id) {
