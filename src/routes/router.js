@@ -17,6 +17,8 @@ router.post('/create', eventController.createEvent);
 router.get('/feed', eventController.getEventFeed)
 router.get('/get-events-from-gioele', eventController.getEventsFromGioeleView);
 router.post('/get-events-from-gioele', eventController.getEventsFromGioele);
+router.get('/import-events', eventController.importEventsView);
+router.post('/import-events', eventController.importEvents);
 
 router.get('/login', authController.loginView);
 router.post('/login', authController.login);

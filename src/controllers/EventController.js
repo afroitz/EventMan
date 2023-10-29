@@ -9,6 +9,25 @@ class EventController {
 
   constructor() {
     this.repository = new EventRepository();
+
+    this.routes = {
+      create: "/create",
+      list: "/list",
+      feed: "/feed",
+      getFromGioele: "/get-events-from-gioele",
+      import: "/import-events"
+    }
+
+    this.importUrls = [
+      {
+        url: 'https://gioele.uber.space/k/fdla2023/feed1.atom',
+        name: 'Gioele Barabucci'
+      },
+      {
+        url: 'https://fdla-atom-feed.xyz/feed',
+        name: 'Nadjim Noori & Kai Niebes'
+      },
+    ]
   }
 
   /**
@@ -19,12 +38,7 @@ class EventController {
 
     res.render("listEvents", {
       events: events,
-      routes: {
-        create: "/create",
-        list: "/list",
-        feed: "/feed",
-        getFromGioele: "/get-events-from-gioele",
-      },
+      routes: this.routes
     });
   };
 
@@ -33,12 +47,7 @@ class EventController {
    */
   createEventView = (req, res) => {
     res.render("createEvent", {
-      routes: {
-        create: "/create",
-        list: "/list",
-        feed: "/feed",
-        getFromGioele: "/get-events-from-gioele",
-      },
+      routes: this.routes
     });
   };
 
@@ -111,12 +120,7 @@ class EventController {
    */
   getEventsFromGioeleView = (req, res) => {
     res.render("getEventsFromGioele", {
-      routes: {
-        create: "/create",
-        list: "/list",
-        feed: "/feed",
-        getFromGioele: "/get-events-from-gioele",
-      },
+      routes: this.routes
     });
   };
 
@@ -124,13 +128,12 @@ class EventController {
    * Get events from Gioele
    */
   getEventsFromGioele = async (req, res) => {
-    
     // save url of atom file
-    const origin = process.env.ATOM_URL;
-    
+    const origin = process.env.GIOELE_URL;
+
     try {
       // fetch atom file
-      const response = await fetch(process.env.ATOM_URL);
+      const response = await fetch(process.env.GIOELE_URL);
       const xml = await response.text();
 
       // parse atom file
@@ -152,7 +155,7 @@ class EventController {
       for (const event of events) {
         try {
           // slice urn:uuid: from id if present
-          if (event.id.slice(0, 9) === "urn:uuid:"){
+          if (event.id.slice(0, 9) === "urn:uuid:") {
             event.id = event.id.slice(9);
           }
 
@@ -164,7 +167,96 @@ class EventController {
             newEvents++;
 
             // update, if event is newer version and from the same source
-          } else if (event.updated > previousEvent.updated && previousEvent.origin == origin){
+          } else if (
+            event.updated > previousEvent.updated &&
+            previousEvent.origin == origin
+          ) {
+            // is newer version, so update in db
+            await this.repository.update(event);
+            updatedEvents++;
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
+      res.json({
+        events: events.length,
+        new: newEvents,
+        updated: updatedEvents,
+      });
+    } catch (e) {
+      console.log(e);
+      res.status(500).send("Error");
+    }
+  };
+
+  /**
+   * Render view for getting events from Gioele
+   */
+  importEventsView = (req, res) => {
+
+    res.render("importEventsFromUrl", {
+      atomUrls: this.importUrls,
+      routes: this.routes
+    });
+  };
+
+  /**
+   * Import an event from one of the available urls
+   */
+  importEvents = async (req, res) => {
+
+    if (!req.body.url) {
+      res.status(400).send("No url provided");
+      return;
+    }
+
+    if(!this.importUrls.find(url => url.url === req.body.url)) {
+      res.status(400).send("Url not supported");
+      return;
+    }
+
+    try {
+      // fetch atom file
+      const response = await fetch(req.body.url);
+      const xml = await response.text();
+
+      // parse atom file
+      const parseString = promisify(
+        xml2js.Parser({ explicitArray: false }).parseString
+      );
+      const result = await parseString(xml);
+
+      // check if there are multiple events
+      const events = Array.isArray(result.feed.entry)
+        ? result.feed.entry
+        : [result.feed.entry];
+
+      // count new and updated events
+      let updatedEvents = 0;
+      let newEvents = 0;
+
+      // try to get event by id and origin
+      for (const event of events) {
+        try {
+          // slice urn:uuid: from id if present
+          if (event.id.slice(0, 9) === "urn:uuid:") {
+            event.id = event.id.slice(9);
+          }
+
+          const previousEvent = await this.repository.get(event.id);
+
+          if (!previousEvent) {
+            // does not exist, so create in db
+            await this.repository.create(event, req.body.url);
+            newEvents++;
+
+            // update, if event is newer version and from the same source
+          } else if (
+            event.updated > previousEvent.updated &&
+            previousEvent.origin == req.body.url
+          ) {
             // is newer version, so update in db
             await this.repository.update(event);
             updatedEvents++;

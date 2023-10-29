@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+    <title>Event Manager</title>
+</head>
+
+<body>
+    <%- include('partials/_header.ejs');  %>
+    <main>
+      <form id="importForm">
+        <% for(let currUrl of atomUrls) { %>
+          <div class="importUrl">
+            <input type="radio" name="url" value="<%= currUrl.url %>">
+            <label><%= currUrl.name %></label>
+          </div>
+        <% } %>
+        <button type="button" id="importButton">Import</button>
+        <p id="get-events-result"></p>
+      </form>
+    </main>
+</body>
+</html>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const importButton = document.getElementById('importButton');
+  const resultIndicator = document.getElementById('get-events-result');
+
+  importButton.addEventListener('click', function() {
+    const selectedURL = document.querySelector("input[name='url']:checked")?.value;
+
+    if (!selectedURL) {
+      alert('Please select a URL.');
+      return;
+    }
+
+    // Using Fetch API to make a POST request
+    fetch('/import-events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url: selectedURL }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      resultIndicator.innerHTML = `Retrieved ${data.events?? 0} events (${data.new?? 0} new, ${data.updated?? 0} updated).`
+    })
+    .catch((error) => {
+      resultIndicator.innerHTML = 'Error importing events.';
+    });
+  });
+});
+</script>
