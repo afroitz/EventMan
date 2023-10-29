@@ -4,6 +4,7 @@ import xml2js from "xml2js";
 import fetch from "node-fetch";
 import { promisify } from "util";
 import { log } from "console";
+import e from "express";
 
 class EventController {
   repository;
@@ -55,7 +56,7 @@ class EventController {
         event_date: eventDate,
       } = req.body;
 
-      // save event to db
+      // save event to db and set origin to APP_URL
       await this.repository.create({
         title: eventTitle,
         summary: eventSummary,
@@ -125,6 +126,10 @@ class EventController {
    * Get events from Gioele
    */
   getEventsFromGioele = async (req, res) => {
+    
+    // save url of atom file
+    const origin = process.env.ATOM_URL;
+    
     try {
       // fetch atom file
       const response = await fetch(process.env.ATOM_URL);
@@ -135,7 +140,7 @@ class EventController {
         xml2js.Parser({ explicitArray: false }).parseString
       );
       const result = await parseString(xml);
-      
+
       // check if there are multiple events
       const events = Array.isArray(result.feed.entry)
         ? result.feed.entry
@@ -145,10 +150,11 @@ class EventController {
       let updatedEvents = 0;
       let newEvents = 0;
 
-      // try to get event by id
+      // try to get event by id and origin
       for (const event of events) {
         try {
-          if (event.id.slice(0, 9) === "urn:uuid:") {
+          // slice urn:uuid: from id if present
+          if (event.id.slice(0, 9) === "urn:uuid:"){
             event.id = event.id.slice(9);
           }
 
@@ -156,9 +162,11 @@ class EventController {
 
           if (!previousEvent) {
             // does not exist, so create in db
-            await this.repository.create(event);
+            await this.repository.create(event, origin);
             newEvents++;
-          } else if (event.updated > previousEvent.updated) {
+
+            // update, if event is newer version and from the same source
+          } else if (event.updated > previousEvent.updated && previousEvent.origin == origin){
             // is newer version, so update in db
             await this.repository.update(event);
             updatedEvents++;
