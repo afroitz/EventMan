@@ -3,8 +3,6 @@ import EventRepository from "../repositories/EventRepository.js";
 import xml2js from "xml2js";
 import fetch from "node-fetch";
 import { promisify } from "util";
-import { log } from "console";
-import e from "express";
 
 class EventController {
   repository;

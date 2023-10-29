@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "develop": "nodemon index.js",
+    "dev": "nodemon index.js",
     "init-db": "bash ./scripts/init-db.sh"
   },
   "keywords": [],
@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.20.2",
+    "cron": "^3.1.5",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
@@ -21,6 +22,7 @@
     "feed": "^4.2.2",
     "node-fetch": "^3.3.2",
     "nodemon": "^3.0.1",
+    "openai": "^4.13.0",
     "pg": "^8.11.3",
     "uuidv4": "^6.2.13",
     "xml2js": "^0.6.2"
