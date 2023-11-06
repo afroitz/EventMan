@@ -27,6 +27,14 @@ class EventController {
         url: 'https://fdla-atom-feed.xyz/feed',
         name: 'Nadjim Noori & Kai Niebes'
       },
+      {
+        url: 'https://flaskwebproject-47bce51faaa6.herokuapp.com/',
+        name: 'Julia Haschke, Pascale Boisvert, Lukas Wilkens '
+      },
+      {
+        url: 'https://fdla-backend-project.onrender.com/',
+        name: 'Andy Klenzman & Evgeniia'
+      }
     ]
   }
 
@@ -102,7 +110,7 @@ class EventController {
           link: `${process.env.APP_URL}/events/${event.id}`,
           author: [{ name: event.author.name ?? "Unknown author" }],
           date: event.updated,
-          summary: "test",
+          description: event.summary,
           published: event.published,
         });
       });
@@ -247,9 +255,19 @@ class EventController {
 
           const previousEvent = await this.repository.get(event.id);
 
+          let validatedEvent = {
+            title: this.validateTextField(event.title, 'title'),
+            id: event.id ?? null,
+            published: event.published ?? null,
+            updated: event.updated ?? null,
+            date: event.date ?? null,
+            summary: this.validateTextField(event.summary, 'summary'),
+            author: { name: event.author.name ?? 'NO AUTHOR' }
+          }
+
           if (!previousEvent) {
             // does not exist, so create in db
-            await this.repository.create(event, req.body.url);
+            await this.repository.create(validatedEvent, req.body.url);
             newEvents++;
 
             // update, if event is newer version and from the same source
@@ -258,7 +276,7 @@ class EventController {
             previousEvent.origin == req.body.url
           ) {
             // is newer version, so update in db
-            await this.repository.update(event);
+            await this.repository.update(validatedEvent);
             updatedEvents++;
           }
         } catch (e) {
@@ -276,6 +294,22 @@ class EventController {
       res.status(500).send("Error");
     }
   };
+
+  validateTextField = (value, fieldName) => {
+    if(!value){
+      return `NO ${fieldName.toUpperCase()}`;
+    }
+
+    if( typeof value === 'string' && value.length > 0) {
+      return value;
+    } 
+
+    if( typeof value === 'object' && value._ && value._.length > 0) {
+      return value._;
+    }
+
+    return `INVALID ${fieldName.toUpperCase()}`;
+  }
 }
 
 export default EventController;
