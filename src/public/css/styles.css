@@ -104,6 +104,7 @@ nav a:hover {
 }
 
 .event-container {
+  max-width: 800px;
   display: flex;
   flex-direction: column;
   margin: 1rem 0;
@@ -133,7 +134,7 @@ nav a:hover {
   border-radius: 1rem;
 }
 
-#get-events-button {
+#get-events-button, #importButton {
   padding: 1rem 2rem;
   font-size: 1.5rem;
   border-radius: 1rem;
@@ -141,7 +142,25 @@ nav a:hover {
   background: green;
   transition: all 0.2s ease-in-out;
 }
-#get-events-button:hover {
+#get-events-button:hover, #importButton:hover {
   transform: rotate(3deg) scale(1.1);
   background-color: chartreuse;
+}
+
+#importForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+#importForm .importUrl {
+  display: flex;
+  gap: 1rem;
+}
+#importForm .importUrl input {
+  width: 1rem;
+  height: 1rem;
+}
+#importForm .importUrl label {
+  white-space: nowrap;
 }/*# sourceMappingURL=styles.css.map */
