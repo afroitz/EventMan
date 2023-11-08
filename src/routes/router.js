@@ -14,9 +14,7 @@ router.get('/', (req, res) => {
 router.get('/create', eventController.createEventView);
 router.get('/list', eventController.listEventsView);
 router.post('/create', eventController.createEvent);
-router.get('/feed', eventController.getEventFeed)
-router.get('/get-events-from-gioele', eventController.getEventsFromGioeleView);
-router.post('/get-events-from-gioele', eventController.getEventsFromGioele);
+router.get('/feed', eventController.getEventFeed);
 router.get('/import-events', eventController.importEventsView);
 router.post('/import-events', eventController.importEvents);
 

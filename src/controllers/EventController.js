@@ -3,18 +3,19 @@ import EventRepository from "../repositories/EventRepository.js";
 import xml2js from "xml2js";
 import fetch from "node-fetch";
 import { promisify } from "util";
+import EventService from "../services/EventService.js";
 
 class EventController {
   repository;
 
   constructor() {
     this.repository = new EventRepository();
+    this.service = new EventService();
 
     this.routes = {
       create: "/create",
       list: "/list",
       feed: "/feed",
-      getFromGioele: "/get-events-from-gioele",
       import: "/import-events"
     }
 
@@ -126,82 +127,6 @@ class EventController {
   /**
    * Render view for getting events from Gioele
    */
-  getEventsFromGioeleView = (req, res) => {
-    res.render("getEventsFromGioele", {
-      routes: this.routes
-    });
-  };
-
-  /**
-   * Get events from Gioele
-   */
-  getEventsFromGioele = async (req, res) => {
-    // save url of atom file
-    const origin = process.env.GIOELE_URL;
-
-    try {
-      // fetch atom file
-      const response = await fetch(process.env.GIOELE_URL);
-      const xml = await response.text();
-
-      // parse atom file
-      const parseString = promisify(
-        xml2js.Parser({ explicitArray: false }).parseString
-      );
-      const result = await parseString(xml);
-
-      // check if there are multiple events
-      const events = Array.isArray(result.feed.entry)
-        ? result.feed.entry
-        : [result.feed.entry];
-
-      // count new and updated events
-      let updatedEvents = 0;
-      let newEvents = 0;
-
-      // try to get event by id and origin
-      for (const event of events) {
-        try {
-          // slice urn:uuid: from id if present
-          if (event.id.slice(0, 9) === "urn:uuid:") {
-            event.id = event.id.slice(9);
-          }
-
-          const previousEvent = await this.repository.get(event.id);
-
-          if (!previousEvent) {
-            // does not exist, so create in db
-            await this.repository.create(event, origin);
-            newEvents++;
-
-            // update, if event is newer version and from the same source
-          } else if (
-            event.updated > previousEvent.updated &&
-            previousEvent.origin == origin
-          ) {
-            // is newer version, so update in db
-            await this.repository.update(event);
-            updatedEvents++;
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
-
-      res.json({
-        events: events.length,
-        new: newEvents,
-        updated: updatedEvents,
-      });
-    } catch (e) {
-      console.log(e);
-      res.status(500).send("Error");
-    }
-  };
-
-  /**
-   * Render view for getting events from Gioele
-   */
   importEventsView = (req, res) => {
 
     res.render("importEventsFromUrl", {
@@ -226,90 +151,17 @@ class EventController {
     }
 
     try {
-      // fetch atom file
-      const response = await fetch(req.body.url);
-      const xml = await response.text();
+      console.log('importing');
+      const importResult = await this.service.importEventsFromUrl(req.body.url)
+      console.log('importresult');
+      console.log(importResult);
 
-      // parse atom file
-      const parseString = promisify(
-        xml2js.Parser({ explicitArray: false }).parseString
-      );
-      const result = await parseString(xml);
-
-      // check if there are multiple events
-      const events = Array.isArray(result.feed.entry)
-        ? result.feed.entry
-        : [result.feed.entry];
-
-      // count new and updated events
-      let updatedEvents = 0;
-      let newEvents = 0;
-
-      // try to get event by id and origin
-      for (const event of events) {
-        try {
-          // slice urn:uuid: from id if present
-          if (event.id.slice(0, 9) === "urn:uuid:") {
-            event.id = event.id.slice(9);
-          }
-
-          const previousEvent = await this.repository.get(event.id);
-
-          let validatedEvent = {
-            title: this.validateTextField(event.title, 'title'),
-            id: event.id ?? null,
-            published: event.published ?? null,
-            updated: event.updated ?? null,
-            date: event.date ?? null,
-            summary: this.validateTextField(event.summary, 'summary'),
-            author: { name: event.author.name ?? 'NO AUTHOR' }
-          }
-
-          if (!previousEvent) {
-            // does not exist, so create in db
-            await this.repository.create(validatedEvent, req.body.url);
-            newEvents++;
-
-            // update, if event is newer version and from the same source
-          } else if (
-            event.updated > previousEvent.updated &&
-            previousEvent.origin == req.body.url
-          ) {
-            // is newer version, so update in db
-            await this.repository.update(validatedEvent);
-            updatedEvents++;
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      }
-
-      res.json({
-        events: events.length,
-        new: newEvents,
-        updated: updatedEvents,
-      });
+      res.json(importResult)
     } catch (e) {
       console.log(e);
       res.status(500).send("Error");
     }
   };
-
-  validateTextField = (value, fieldName) => {
-    if(!value){
-      return `NO ${fieldName.toUpperCase()}`;
-    }
-
-    if( typeof value === 'string' && value.length > 0) {
-      return value;
-    } 
-
-    if( typeof value === 'object' && value._ && value._.length > 0) {
-      return value._;
-    }
-
-    return `INVALID ${fieldName.toUpperCase()}`;
-  }
 }
 
 export default EventController;

@@ -56,7 +56,7 @@ class EventRepository {
     const client = await pool.connect();
 
     if (!event.id) {
-      event.id = uuidv4();
+      event.id = 'urn:uuid:' + uuidv4();
     }
 
     if(!event.published){
