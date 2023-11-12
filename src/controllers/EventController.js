@@ -190,10 +190,6 @@ class EventController {
           importResult.updated !== undefined
         ) {
           console.log(`Import result for ${urlInfo.name}:`, importResult);
-          console.log(totalEvents)
-          console.log(totalImported)
-          console.log(totalUpdated)
-          console.log(urlsChecked)
           urlsChecked += 1;
           totalEvents += importResult.events;
           totalImported += importResult.new;
@@ -210,8 +206,6 @@ class EventController {
         new: totalImported,
         updated: totalUpdated,
       };
-
-      console.log(log);
 
       res.json(log);
 
