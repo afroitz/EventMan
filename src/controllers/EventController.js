@@ -182,8 +182,8 @@ class EventController {
         if (
           importResult &&
           importResult.events &&
-          importResult.newEvents !== undefined &&
-          importResult.updatedEvents !== undefined
+          importResult.new !== undefined &&
+          importResult.updated !== undefined
         ) {
           console.log(`Import result for ${urlInfo.name}:`, importResult);
           urlsChecked += 1;
