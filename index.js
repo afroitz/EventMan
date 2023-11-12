@@ -51,7 +51,7 @@ app.use('/', router);
 app.listen(PORT, () => console.log("App listening on port " + PORT))
 
 // register cron job for adding events via gpt api
-const jobEventService = new EventService();
+/* const jobEventService = new EventService();
 const gptJob = new CronJob(
   '0 0 0,12 * * *',
   async () => {
@@ -65,7 +65,6 @@ const gptJob = new CronJob(
   null,
   true,
   'Europe/Berlin'
-);
-
+); */
 
 export default pool;
