@@ -67,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
         allEventsResultIndicator.innerHTML = `Imported data from ${data.urls?? 0} sources<br>(${data.events?? 0} events, ${data.new?? 0} new, ${data.updated?? 0} updated)`
-
     })
     .catch((error) => {
         allEventsResultIndicator.innerHTML = 'Error importing all events.';

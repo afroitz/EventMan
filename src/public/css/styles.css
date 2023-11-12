@@ -134,7 +134,7 @@ nav a:hover {
   border-radius: 1rem;
 }
 
-#get-events-button, #importButton {
+#get-events-button, #importButton{
   padding: 1rem 2rem;
   font-size: 1.5rem;
   border-radius: 1rem;
@@ -142,9 +142,24 @@ nav a:hover {
   background: green;
   transition: all 0.2s ease-in-out;
 }
-#get-events-button:hover, #importButton:hover {
+
+#get-events-button:hover, #importButton:hover, #importAllButton:hover {
   transform: rotate(3deg) scale(1.1);
   background-color: chartreuse;
+}
+
+#importAllButton {
+  padding: 1rem 2rem;
+  font-size: 1.5rem;
+  border-radius: 1rem;
+  font-weight: bold;
+  background: rgb(169, 7, 7);
+  transition: all 0.2s ease-in-out;
+}
+
+#importAllButton:hover {
+  transform: rotate(-3deg) scale(1.1);
+  background-color: red;
 }
 
 #importForm {
