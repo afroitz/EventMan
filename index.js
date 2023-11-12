@@ -67,5 +67,4 @@ const gptJob = new CronJob(
   'Europe/Berlin'
 ); */
 
-
 export default pool;

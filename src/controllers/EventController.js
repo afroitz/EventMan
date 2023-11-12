@@ -176,13 +176,11 @@ class EventController {
         try {
           importResult = await this.service.importEventsFromUrl(urlInfo.url);
         } catch (error) {
-          // Handle the error, log it, or skip to the next iteration
           console.error(`Error importing events from ${urlInfo.name}:`, error);
           continue;
         }
   
         // Check if importResult is an object with the expected properties
-
         if (
           importResult &&
           importResult.events &&
