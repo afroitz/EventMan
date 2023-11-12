@@ -4,6 +4,7 @@ import xml2js from "xml2js";
 import fetch from "node-fetch";
 import { promisify } from "util";
 import EventService from "../services/EventService.js";
+import { report } from "process";
 
 class EventController {
   repository;
@@ -160,13 +161,15 @@ class EventController {
     }
   };
 
-  importEventsFromAll = async () => {
-    let urlsChecked = 0;
-    let totalEvents = 0;
-    let totalImported = 0;
-    let totalUpdated = 0;
+  importEventsFromAll = async (req, res) => {
   
     try {
+
+      let urlsChecked = 0;
+      let totalEvents = 0;
+      let totalImported = 0;
+      let totalUpdated = 0;
+
       for (const urlInfo of this.importUrls) {
         let importResult;
   
@@ -179,6 +182,7 @@ class EventController {
         }
   
         // Check if importResult is an object with the expected properties
+
         if (
           importResult &&
           importResult.events &&
@@ -186,22 +190,31 @@ class EventController {
           importResult.updated !== undefined
         ) {
           console.log(`Import result for ${urlInfo.name}:`, importResult);
+          console.log(totalEvents)
+          console.log(totalImported)
+          console.log(totalUpdated)
+          console.log(urlsChecked)
           urlsChecked += 1;
-          totalEvents += importResult.events.length;
-          totalImported += importResult.newEvents;
-          totalUpdated += importResult.updatedEvents;
+          totalEvents += importResult.events;
+          totalImported += importResult.new;
+          totalUpdated += importResult.updated;
         } else {
           console.error(`Invalid import result from ${urlInfo.name}`);
           continue;
         }
       }
   
-      return {
+      let log = {
         urls: urlsChecked,
         events: totalEvents,
         new: totalImported,
         updated: totalUpdated,
       };
+
+      console.log(log);
+
+      res.json(log);
+
     } catch (e) {
       console.error("Error importing events:", e);
     }
