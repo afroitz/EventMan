@@ -205,6 +205,7 @@ class EventController {
         events: totalEvents,
         new: totalImported,
         updated: totalUpdated,
+        invalid: this.importUrls.length - urlsChecked,
       };
 
       res.json(log);
