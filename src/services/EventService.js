@@ -37,8 +37,8 @@ class EventService {
       for (const event of events) {
         try {
 
-          console.log('\n---\n');
-          console.log(JSON.stringify(event, null, 2));
+          //console.log('\n---\n');
+          //console.log(JSON.stringify(event, null, 2));
 
           const previousEvent = await this.repository.get(event.id);
 
@@ -52,7 +52,7 @@ class EventService {
             author: { name: event.author?.name ?? 'NO AUTHOR' }
           }
 
-          console.log(JSON.stringify(validatedEvent, null, 2));
+          //console.log(JSON.stringify(validatedEvent, null, 2));
 
           if (!previousEvent) {
             // does not exist, so create in db

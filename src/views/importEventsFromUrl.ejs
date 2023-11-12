@@ -20,6 +20,10 @@
         <button type="button" id="importButton">Import</button>
         <p id="get-events-result"></p>
       </form>
+      <form id="importAllForm">
+        <button type="button" id="importAllButton">Import All</button>
+        <p id="all-events-result"></p>
+    </form>
     </main>
 </body>
 </html>
@@ -27,7 +31,9 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const importButton = document.getElementById('importButton');
+  const importAllButton = document.getElementById('importAllButton'); 
   const resultIndicator = document.getElementById('get-events-result');
+  const allEventsResultIndicator = document.getElementById('all-events-result');
 
   importButton.addEventListener('click', function() {
     const selectedURL = document.querySelector("input[name='url']:checked")?.value;
@@ -51,6 +57,19 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch((error) => {
       resultIndicator.innerHTML = 'Error importing events.';
+    });
+  });
+  importAllButton.addEventListener('click', function () {
+
+    fetch('/import-all-events', {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        allEventsResultIndicator.innerHTML = `Imported: ${JSON.stringify(data)}`;
+    })
+    .catch((error) => {
+        allEventsResultIndicator.innerHTML = 'Error importing all events.';
     });
   });
 });

@@ -151,15 +151,59 @@ class EventController {
     }
 
     try {
-      console.log('importing');
       const importResult = await this.service.importEventsFromUrl(req.body.url)
-      console.log('importresult');
-      console.log(importResult);
 
       res.json(importResult)
     } catch (e) {
       console.log(e);
       res.status(500).send("Error");
+    }
+  };
+
+  importEventsFromAll = async () => {
+    let urlsChecked = 0;
+    let totalEvents = 0;
+    let totalImported = 0;
+    let totalUpdated = 0;
+  
+    try {
+      for (const urlInfo of this.importUrls) {
+        let importResult;
+  
+        try {
+          importResult = await this.service.importEventsFromUrl(urlInfo.url);
+        } catch (error) {
+          // Handle the error, log it, or skip to the next iteration
+          console.error(`Error importing events from ${urlInfo.name}:`, error);
+          continue;
+        }
+  
+        // Check if importResult is an object with the expected properties
+        if (
+          importResult &&
+          importResult.events &&
+          importResult.newEvents !== undefined &&
+          importResult.updatedEvents !== undefined
+        ) {
+          console.log(`Import result for ${urlInfo.name}:`, importResult);
+          urlsChecked += 1;
+          totalEvents += importResult.events.length;
+          totalImported += importResult.newEvents;
+          totalUpdated += importResult.updatedEvents;
+        } else {
+          console.error(`Invalid import result from ${urlInfo.name}`);
+          continue;
+        }
+      }
+  
+      return {
+        urls: urlsChecked,
+        events: totalEvents,
+        new: totalImported,
+        updated: totalUpdated,
+      };
+    } catch (e) {
+      console.error("Error importing events:", e);
     }
   };
 }

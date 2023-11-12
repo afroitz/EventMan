@@ -17,6 +17,7 @@ router.post('/create', eventController.createEvent);
 router.get('/feed', eventController.getEventFeed);
 router.get('/import-events', eventController.importEventsView);
 router.post('/import-events', eventController.importEvents);
+router.post('/import-all-events', eventController.importEventsFromAll);
 
 router.get('/login', authController.loginView);
 router.post('/login', authController.login);
