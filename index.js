@@ -8,6 +8,7 @@ import { dirname } from 'path';
 import session from 'express-session';
 import { CronJob } from 'cron';
 import EventService from './src/services/EventService.js';
+import EventController from './src/controllers/EventController.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -50,8 +51,10 @@ app.use('/', router);
 
 app.listen(PORT, () => console.log("App listening on port " + PORT))
 
+const jobEventService = new EventService();
+const jobEventController = new EventController();
+
 // register cron job for adding events via gpt api
-/* const jobEventService = new EventService();
 const gptJob = new CronJob(
   '0 0 0,12 * * *',
   async () => {
@@ -65,6 +68,25 @@ const gptJob = new CronJob(
   null,
   true,
   'Europe/Berlin'
-); */
+);
+
+const importJob = new CronJob(
+  '0 0 * * * *',
+  async () => {
+    console.log("Running Import Job")
+    for(const url of jobEventController.importUrls) {
+      console.log(`Importing from ${url.url}`)
+      try {
+        await jobEventService.importEventsFromUrl(url.url);
+        console.log('\tSuccess!')
+      } catch {
+        console.log('\tFailed!')
+      }
+    }
+  },
+  null,
+  true,
+  'Europe/Berlin'
+);
 
 export default pool;
