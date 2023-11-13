@@ -1,10 +1,6 @@
 import { Feed } from "feed";
 import EventRepository from "../repositories/EventRepository.js";
-import xml2js from "xml2js";
-import fetch from "node-fetch";
-import { promisify } from "util";
 import EventService from "../services/EventService.js";
-import { report } from "process";
 
 class EventController {
   repository;
